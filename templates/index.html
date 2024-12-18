@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Prediction</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        /* Form styles */
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: #007BFF;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 1.2em;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            grid-column: span 2;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Message styles */
+        .result, .error {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result h2 {
+            color: green;
+            font-size: 1.5em;
+        }
+
+        .error h2 {
+            color: red;
+            font-size: 1.5em;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Prediction: Will it Rain Tomorrow?</h1>
+
+        <!-- Form for input data -->
+        <form method="POST" action="/predict">
+            <div class="form-group">
+                <label for="max_temp">Max Temperature (°C):</label>
+                <input type="number" id="max_temp" name="max_temp" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="min_temp">Min Temperature (°C):</label>
+                <input type="number" id="min_temp" name="min_temp" required>
+            </div>
+
+            <div class="form-group">
+                <label for="temp3pm">Temperature at 3PM (°C):</label>
+                <input type="number" id="temp3pm" name="temp3pm" required>
+            </div>
+
+            <div class="form-group">
+                <label for="humidity3pm">Humidity at 3PM (%):</label>
+                <input type="number" id="humidity3pm" name="humidity3pm" required>
+            </div>
+
+            <div class="form-group">
+                <label for="windspeed9am">Windspeed at 9AM (km/h):</label>
+                <input type="number" id="windspeed9am" name="windspeed9am" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pressure3pm">Pressure at 3PM (hPa):</label>
+                <input type="number" id="pressure3pm" name="pressure3pm" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cloud3pm">Cloud Cover at 3PM (%):</label>
+                <input type="number" id="cloud3pm" name="cloud3pm" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cloud9am">Cloud Cover at 9AM (%):</label>
+                <input type="number" id="cloud9am" name="cloud9am" required>
+            </div>
+
+            <div class="form-group">
+                <label for="evaporation">Evaporation (mm):</label>
+                <input type="number" id="evaporation" name="evaporation" required>
+            </div>
+
+            <div class="form-group">
+                <label for="humidity9am">Humidity at 9AM (%):</label>
+                <input type="number" id="humidity9am" name="humidity9am" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="text" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="windgustdir">Wind Gust Direction:</label>
+                <input type="text" id="windgustdir" name="windgustdir" required>
+            </div>
+
+            <div class="form-group">
+                <label for="windgustspeed">Wind Gust Speed (km/h):</label>
+                <input type="number" id="windgustspeed" name="windgustspeed" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rainfall">Rainfall (mm):</label>
+                <input type="number" id="rainfall" name="rainfall" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rain_today">Rain Today:</label>
+                <select id="rain_today" name="rain_today" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <!-- Display Prediction or Error Message -->
+        {% if prediction_text %}
+        <div class="result">
+            <h2>{{ prediction_text }}</h2>
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="error">
+            <h2>Error: {{ error_message }}</h2>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
